@@ -1,3 +1,18 @@
+let numOne;
+let numTwo;
+let operator;
+
+function operate(a, b, operator) {
+    if (operator === "+") {
+        return add(a, b);
+    } else if (operator === "-") {
+        return subtract(a, b);
+    } else if (operator === "*") {
+        return multiply(a, b);
+    }
+    return divide(a, b);
+}
+
 function add(a, b) {
     return a + b;
 }
