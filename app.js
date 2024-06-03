@@ -8,17 +8,61 @@ const numberKeys = document.querySelectorAll(".number");
 const operatorKeys = document.querySelectorAll(".operator");
 const equalsKey = document.querySelector(".equals-key");
 const clearKey = document.querySelector(".clear-key");
+const negateKey = document.querySelector(".negate-key");
+const percentKey = document.querySelector(".percent-key");
+const dotKey = document.querySelector(".dot-key");
 
 numberKeys.forEach(key => key.addEventListener("click", () => appendNumber(key.textContent)));
 operatorKeys.forEach(key => key.addEventListener("click", () => saveOperator(key.textContent)));
 
-clearKey.addEventListener("click", () => {
+clearKey.addEventListener("click", () => clearMemory());
+negateKey.addEventListener("click", () => negate());
+percentKey.addEventListener("click", () => convertToPercent());
+equalsKey.addEventListener("click", () =>  getAnswer());
+dotKey.addEventListener("click", () => addDot());
+
+function clear() {
+    numOne = "0";
+    numTwo = "";
+    operator = "";
+}
+
+function clearMemory() {
     display.textContent = "0";
+    shouldClear = false;
     operatorPressed = false;
     clear();
-});
+}
 
-equalsKey.addEventListener("click", () =>  {
+function negate() {
+    if (operatorPressed) {
+        if (numTwo.charAt(0) === "-") {
+            numTwo = numTwo.slice(1);
+        } else {
+            numTwo = "-" + numTwo;
+        }
+        display.textContent = numTwo;
+    } else {
+        if (numOne.charAt(0) === "-") {
+            numOne = numOne.slice(1);
+        } else {
+            numOne = "-" + numOne;
+        }
+        display.textContent = numOne;
+    }
+}
+
+function convertToPercent() {
+    if (operatorPressed) {
+        numTwo /= 100;
+        display.textContent = numTwo;
+    } else {
+        numOne /= 100;
+        display.textContent = numOne;
+    }
+}
+
+function getAnswer() {
     if (numTwo !== "") {
         console.log(`${numOne} ${operator} ${numTwo}`);
         display.textContent = operate(parseFloat(numOne), parseFloat(numTwo), operator);
@@ -28,12 +72,20 @@ equalsKey.addEventListener("click", () =>  {
         // Save last computed answer as first operand
         numOne = display.textContent;
     }
-});
+}
 
-function clear() {
-    numOne = "";
-    numTwo = "";
-    operator = "";
+function addDot() {
+    if (operatorPressed) {
+        if (!numTwo.includes(".")) {
+            numTwo += ".";
+            display.textContent = numTwo;
+        }
+    } else {
+        if (!numOne.includes(".")) {
+            numOne += ".";
+            display.textContent = numOne;
+        }
+    }
 }
 
 function appendNumber(text) {
@@ -55,6 +107,7 @@ function saveOperator(symbol) {
     shouldClear = true;
     operatorPressed = true;
 
+    // Chaining operators
     if (numTwo !== "") {
         numOne = operate(parseFloat(numOne), parseFloat(numTwo), operator);
         numTwo = "";
