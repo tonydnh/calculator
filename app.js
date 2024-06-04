@@ -153,6 +153,7 @@ function operate(a, b, operator) {
 }
 
 function round(num) {
+    // Round to nearest 7ths place to fit display
     return Math.round(num * 1e7) / 1e7;
 }
 
