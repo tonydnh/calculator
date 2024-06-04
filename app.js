@@ -65,7 +65,7 @@ function convertToPercent() {
 function getAnswer() {
     if (numTwo !== "") {
         console.log(`${numOne} ${operator} ${numTwo}`);
-        display.textContent = operate(parseFloat(numOne), parseFloat(numTwo), operator);
+        display.textContent = round(operate(parseFloat(numOne), parseFloat(numTwo), operator));
         operatorPressed = false;
         shouldClear = true;
         clear();
@@ -77,12 +77,14 @@ function getAnswer() {
 function addDot() {
     if (operatorPressed) {
         if (!numTwo.includes(".")) {
-            numTwo += ".";
+            numTwo = numTwo === "" ? "0." : numTwo + ".";
             display.textContent = numTwo;
+            // Prevent number before decimal from not being shown in second operand
+            shouldClear = false;
         }
     } else {
         if (!numOne.includes(".")) {
-            numOne += ".";
+            numOne = numOne === "" ? "0." : numOne + ".";
             display.textContent = numOne;
         }
     }
@@ -95,12 +97,23 @@ function appendNumber(text) {
     if (numOne === "0" && !operatorPressed) numOne = "";
 
     if (operatorPressed) {
-        numTwo += text;
+        if (!maxLengthReached(numTwo)){
+            numTwo += text;
+            display.textContent += text;
+        }
     } else {
-        numOne += text;
+        if (!maxLengthReached(numOne)) {
+            numOne += text;
+            display.textContent += text;
+        }
     }
+}
 
-    display.textContent += text;
+function maxLengthReached(num) {
+    if (num < 0) {
+        return num.slice(1).length >= 9;
+    }
+    return num.length >= 9;
 }
 
 function saveOperator(symbol) {
@@ -109,7 +122,7 @@ function saveOperator(symbol) {
 
     // Chaining operators
     if (numTwo !== "") {
-        numOne = operate(parseFloat(numOne), parseFloat(numTwo), operator);
+        numOne = round(operate(parseFloat(numOne), parseFloat(numTwo), operator));
         numTwo = "";
         display.textContent = numOne;
     }
@@ -137,6 +150,10 @@ function operate(a, b, operator) {
         return multiply(a, b);
     }
     return divide(a, b);
+}
+
+function round(num) {
+    return Math.round(num * 1e7) / 1e7;
 }
 
 function add(a, b) {
